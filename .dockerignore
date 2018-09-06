@@ -1,0 +1,6 @@
+# Docker-specific
+.dockerignore
+Dockerfile
+
+# Gitignores
+/vendor/

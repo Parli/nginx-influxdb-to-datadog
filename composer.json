@@ -1,0 +1,15 @@
+{
+    "name": "parli/nginx-influxdb-to-datadog",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eric Stern",
+            "email": "eric@slant.co"
+        }
+    ],
+    "require": {
+        "react/datagram": "^1.4",
+        "react/event-loop": "^1.0",
+        "datadog/php-datadogstatsd": "^1.1"
+    }
+}
