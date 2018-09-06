@@ -22,7 +22,6 @@ class Rewriter
         list($measurement, $serverNameTagStr) = explode(',', $head, 2);
         list($_, $serverName) = explode('=', $serverNameTagStr, 2);
         $tags = $this->parseTags($tagStr);
-        // var_dump($measurement, $serverName, $tags);
 
         $this->datadog->increment($measurement.'.request.count', 1.0, [
             'code' => $tags['status'],
