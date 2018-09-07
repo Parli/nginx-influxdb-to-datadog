@@ -28,6 +28,17 @@
     "require-dev": {
         "phpstan/phpstan": "^0.10.3",
         "phpstan/phpstan-phpunit": "^0.10.0",
-        "phpunit/phpunit": "^7.3"
+        "phpunit/phpunit": "^7.3",
+        "squizlabs/php_codesniffer": "^3.3"
+    },
+    "scripts": {
+      "test": [
+        "@phpunit",
+        "@phpstan",
+        "@phpcs"
+      ],
+      "phpunit": "phpunit",
+      "phpstan": "phpstan analyse --no-progress -c phpstan.neon -l7 .",
+      "phpcs": "phpcs ."
     }
 }
