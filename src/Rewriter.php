@@ -48,36 +48,36 @@ class Rewriter
         for ($i = 0; $i < $tagLen; $i++) {
             $char = $tagStr[$i];
             switch ($state) {
-            case self::STATE_TAG_NAME:
-                if ($char === '=') {
-                    $state = self::STATE_TAG_VALUE;
-                } elseif ($char === ',') {
-                    // tag with no value
-                    $tags[$tagName] = $tagValue;
-                    $tagName = $tagValue = '';
-                } else {
-                    $tagName .= $char;
-                }
-                break;
-            case self::STATE_TAG_VALUE:
-                if ($char === ',' && !$quoted) {
-                    $state = self::STATE_TAG_NAME;
-                    $tags[$tagName] = $tagValue;
-                    $tagName = $tagValue = '';
-                } elseif ($char === '"' && $quoted && !$escaped) {
-                    // End of quoted value
-                    $quoted = false;
-                } elseif ($char === '"' && !$quoted) {
-                    $quoted = true;
-                } elseif ($char === '\\' && $quoted && !$escaped) {
-                    $escaped = true;
-                } else {
-                    $escaped = false;
-                    $tagValue .= $char;
-                }
-                break;
-            default:
-                throw new \Exception("Invalid state $state");
+                case self::STATE_TAG_NAME:
+                    if ($char === '=') {
+                        $state = self::STATE_TAG_VALUE;
+                    } elseif ($char === ',') {
+                        // tag with no value
+                        $tags[$tagName] = $tagValue;
+                        $tagName = $tagValue = '';
+                    } else {
+                        $tagName .= $char;
+                    }
+                    break;
+                case self::STATE_TAG_VALUE:
+                    if ($char === ',' && !$quoted) {
+                        $state = self::STATE_TAG_NAME;
+                        $tags[$tagName] = $tagValue;
+                        $tagName = $tagValue = '';
+                    } elseif ($char === '"' && $quoted && !$escaped) {
+                        // End of quoted value
+                        $quoted = false;
+                    } elseif ($char === '"' && !$quoted) {
+                        $quoted = true;
+                    } elseif ($char === '\\' && $quoted && !$escaped) {
+                        $escaped = true;
+                    } else {
+                        $escaped = false;
+                        $tagValue .= $char;
+                    }
+                    break;
+                default:
+                    throw new \Exception("Invalid state $state");
             }
         }
         // Insert last remaining value, which is not caught by last character
@@ -85,4 +85,3 @@ class Rewriter
         return $tags;
     }
 }
-
