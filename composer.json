@@ -1,15 +1,33 @@
 {
     "name": "parli/nginx-influxdb-to-datadog",
     "license": "MIT",
+    "config": {
+      "sort-packages": true
+    },
     "authors": [
         {
             "name": "Eric Stern",
             "email": "eric@slant.co"
         }
     ],
+    "autoload": {
+      "psr-4": {
+        "Slant\\Monitoring\\": "src"
+      }
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "Slant\\Monitoring\\": "tests"
+      }
+    },
     "require": {
         "react/datagram": "^1.4",
         "react/event-loop": "^1.0",
         "datadog/php-datadogstatsd": "^1.1"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.10.3",
+        "phpstan/phpstan-phpunit": "^0.10.0",
+        "phpunit/phpunit": "^7.3"
     }
 }

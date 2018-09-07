@@ -1,6 +1,5 @@
 <?php
 require 'vendor/autoload.php';
-require 'Rewriter.php';
 
 $host = getenv('HOST') ?: 'localhost';
 $port = getenv('PORT') ?: 8089;
@@ -15,7 +14,7 @@ if (getenv('RESOLVE_STATSD_HOST')) {
 }
 
 $dd = new DataDog\DogStatsd(['host' => $statsdHost, 'port' => $statsdPort]);
-$writer = new Rewriter($dd);
+$writer = new Slant\Monitoring\Rewriter($dd);
 
 
 $serverAddress = sprintf('%s:%d', $host, $port);

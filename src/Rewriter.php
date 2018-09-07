@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use Datadog\DogStatsd;
+namespace Slant\Monitoring;
+
+use DataDog\DogStatsd;
 
 class Rewriter
 {
