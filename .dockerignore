@@ -1,6 +1,9 @@
 # Docker-specific
 .dockerignore
 Dockerfile
+.git
+.gitignore
 
 # Gitignores
+/build/
 /vendor/
