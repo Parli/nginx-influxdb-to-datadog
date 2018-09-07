@@ -1,6 +1,7 @@
 # Nginx InfluxDB to Datadog
 
 [![Build Status](https://travis-ci.org/Parli/nginx-influxdb-to-datadog.svg?branch=master)](https://travis-ci.org/Parli/nginx-influxdb-to-datadog)
+[![codecov](https://codecov.io/gh/Parli/nginx-influxdb-to-datadog/branch/master/graph/badge.svg)](https://codecov.io/gh/Parli/nginx-influxdb-to-datadog)
 
 A very simple server that receives packets from the [Nginx InfluxDB Module](https://github.com/influxdata/nginx-influxdb-module) and relays them directly to a DataDog StatsD server.
 
