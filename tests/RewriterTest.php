@@ -22,7 +22,7 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
      * @covers ::rewrite
      * @dataProvider influxDbMessages
      */
-    public function testRewrite(string $message, string $prefix, array $tags)
+    public function testRewrite(string $message, string $prefix, float $time, array $tags)
     {
         $dd = $this->createMock(DogStatsd::class);
         $dd->method('microtiming')
@@ -38,6 +38,7 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
         $rewriter->rewrite($message);
 
         $this->expectIncrement('request.count');
+        $this->expectTimer('request.duration', $time);
         $this->performAssertions($prefix, $tags);
     }
 
@@ -51,6 +52,7 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
                 'content_type="text/plain; charset=utf-8",request_time=0.047',
 
                 'default',
+                0.047,
                 ['code' => '500',
                  'method' => 'GET',
                  'server_name' => 'amp.reefpig.com',
@@ -62,6 +64,11 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
     private function expectIncrement(string $metric)
     {
         $this->expectedIncrements[] = $metric;
+    }
+
+    private function expectTimer(string $metric, float $seconds)
+    {
+        $this->expectedTimers[] = [$metric, $seconds];
     }
 
     private function performAssertions(string $prefix, array $tags)
@@ -78,12 +85,27 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
                     break;
                 }
             }
-            if (!$found) {
-                $this->fail(sprintf('Expected increment metric %s not found', $metric));
-            }
+            $this->assertNotFalse($found, sprintf('Expected increment metric %s not found', $metric));
             ksort($tags);
             ksort($found[2]);
             $this->assertEquals($tags, $found[2], 'Tags do not match');
+        }
+
+        foreach ($this->expectedTimers as $et) {
+            list($suffix, $seconds) = $et;
+            $metric = sprintf('%s.%s', $prefix, $suffix);
+            $found = false;
+            foreach ($this->timers as $timer) {
+                if ($timer[0] === $metric) {
+                    $found = $timer;
+                    break;
+                }
+            }
+            $this->assertNotFalse($found, sprintf('Timer metric %s not found', $metric));
+            $this->assertEquals($seconds, $found[1], 'Incorrect timing value');
+            ksort($tags);
+            ksort($found[3]);
+            $this->assertEquals($tags, $found[3], 'Tags do not match');
         }
     }
 }
