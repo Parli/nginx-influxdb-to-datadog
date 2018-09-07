@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Parli/nginx-influxdb-to-datadog.svg?branch=master)](https://travis-ci.org/Parli/nginx-influxdb-to-datadog)
 [![codecov](https://codecov.io/gh/Parli/nginx-influxdb-to-datadog/branch/master/graph/badge.svg)](https://codecov.io/gh/Parli/nginx-influxdb-to-datadog)
 
-A very simple server that receives packets from the [Nginx InfluxDB Module](https://github.com/influxdata/nginx-influxdb-module) and relays them directly to a DataDog StatsD server.
+A very simple server that receives packets from the [Nginx InfluxDB Module](https://github.com/influxdata/nginx-influxdb-module) and relays them directly to a Datadog StatsD server.
 
 ## Quick Start
 
@@ -81,9 +81,8 @@ Please plan accordingly!
 At this time, the following metrics are _not_ supported:
 
 - request size
-- request duration
-- response size
-- response duration
+- upstream response size
+- upstream response duration
 
 Of note, the response duration is not available in the incoming metrics at this time.
 See [this issue](https://github.com/influxdata/nginx-influxdb-module/issues/3) for details.
@@ -93,12 +92,12 @@ This may be added in a future release, particularly as additional metrics are ad
 
 ## Motivation
 
-At Slant, we are using DataDog as our primary monitoring tool.
+At Slant, we are using Datadog as our primary monitoring tool.
 Unfortunately, their native Nginx integration provides very limited information (which is a limitation of Nginx itself).
 While some of the relevant metrics are exposed via Prometheus, there are some data import issues that we've encounted.
 
 After some investigating, we discovered that the metrics that can be sent to InfluxDB contain most of the data we're looking for, and are sent on every request.
-Unfortunately, using the recommended Telegraf sidecar to send the metrics to DataDog produced some _really_ weird results.
+Unfortunately, using the recommended Telegraf sidecar to send the metrics to Datadog produced some _really_ weird results.
 Instead, we've opted to do a small amount of processing on the data to reformat it to something we knew works.
 
 This code should not exist.
