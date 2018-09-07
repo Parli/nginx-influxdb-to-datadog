@@ -49,6 +49,7 @@ metadata:
 | Metric Name | Metric Type | Description | Tags |
 | --- | --- | --- | --- |
 | PREFIX.request.count | counter | Request Count | code, method, server_name |
+| PREFIX.request.duration | histogram | Request Duration (total processing time) | code, method, server_name |
 
 **Warning:** These will be counted towards Datadog custom metrics, and the tags could result in many custom metrics even for a single Ingress.
 This could result in increased billing.
