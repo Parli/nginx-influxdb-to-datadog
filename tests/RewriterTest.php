@@ -13,9 +13,9 @@ use DataDog\DogStatsd;
 class RewriterTest extends \PHPUnit\Framework\TestCase
 {
     private $expectedIncrements = [];
-    private $expectedHistograms = [];
+    private $expectedTimers = [];
 
-    private $histograms = [];
+    private $timers = [];
     private $increments = [];
 
     /**
@@ -25,9 +25,9 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
     public function testRewrite(string $message, string $prefix, array $tags)
     {
         $dd = $this->createMock(DogStatsd::class);
-        $dd->method('histogram')
+        $dd->method('microtiming')
             ->willReturnCallback(function (...$args) {
-                $this->histograms[] = $args;
+                $this->timers[] = $args;
             });
         $rewriter = new Rewriter($dd);
         $dd->method('increment')
@@ -67,7 +67,7 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
     private function performAssertions(string $prefix, array $tags)
     {
         $this->assertCount(count($this->expectedIncrements), $this->increments, 'Incorrect increment count');
-        $this->assertCount(count($this->expectedHistograms), $this->histograms, 'Incorrect histogram count');
+        $this->assertCount(count($this->expectedTimers), $this->timers, 'Incorrect timer count');
 
         foreach ($this->expectedIncrements as $suffix) {
             $metric = sprintf('%s.%s', $prefix, $suffix);
@@ -87,6 +87,3 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
         }
     }
 }
-// metric,server_name=amp.reefpig.com method="GET",status=404,bytes_sent=223,body_bytes_sent=9,header_bytes_sent=214,request_length=799,uri="/f,oo"bar",extension="",content_type="text/plain; charset=utf-8",request_time=0.001
-
-// metric,server_name=amp.reefpig.com method="GET",status=404,bytes_sent=223,body_bytes_sent=9,header_bytes_sent=214,request_length=824,uri="/foo"bar",extension="",content_type="text/plain; charset=utf-8",request_time=0.003
