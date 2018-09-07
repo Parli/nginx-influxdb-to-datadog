@@ -25,11 +25,20 @@ class Rewriter
         list($_, $serverName) = explode('=', $serverNameTagStr, 2);
         $tags = $this->parseTags($tagStr);
 
-        $this->datadog->increment($measurement.'.request.count', 1.0, [
+        $ddTags = [
             'code' => $tags['status'],
             'method' => $tags['method'],
             'server_name' => $serverName,
-        ]);
+        ];
+        // Simple request counter
+        $this->datadog->increment($measurement.'.request.count', 1.0, $ddTags);
+        // Total request duration (value is received in seconds)
+        $this->datadog->microtiming(
+            $measurement.'.request.duration',
+            (float)$tags['request_time'],
+            1.0,
+            $ddTags
+        );
     }
 
     private function parseTags(string $tagStr): array
