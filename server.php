@@ -24,8 +24,8 @@ echo "Rewriting to $statsdHost:$statsdPort\n";
 $loop = React\EventLoop\Factory::create();
 $factory = new React\Datagram\Factory($loop);
 
-$factory->createServer($serverAddress)->then(function (React\Datagram\Socket $server)  use ($writer) {
-    $server->on('message', function($message, $address, $server) use ($writer) {
+$factory->createServer($serverAddress)->then(function (React\Datagram\Socket $server) use ($writer) {
+    $server->on('message', function ($message, $address, $server) use ($writer) {
         $writer->rewrite($message);
     });
 });
