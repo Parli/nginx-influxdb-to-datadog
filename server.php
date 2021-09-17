@@ -1,6 +1,8 @@
 <?php
 require 'vendor/autoload.php';
 
+use React\EventLoop\Loop;
+
 $host = getenv('HOST') ?: 'localhost';
 $port = getenv('PORT') ?: 8089;
 
@@ -21,13 +23,16 @@ $serverAddress = sprintf('%s:%d', $host, $port);
 echo "Listening on $serverAddress\n";
 echo "Rewriting to $statsdHost:$statsdPort\n";
 
-$loop = React\EventLoop\Factory::create();
-$factory = new React\Datagram\Factory($loop);
+$factory = new React\Datagram\Factory();
 
 $factory->createServer($serverAddress)->then(function (React\Datagram\Socket $server) use ($writer) {
     $server->on('message', function ($message, $address, $server) use ($writer) {
         $writer->rewrite($message);
     });
 });
-$loop->run();
+
+Loop::addSignal(SIGINT, fn () => Loop::stop());
+Loop::addSignal(SIGTERM, fn () => Loop::stop());
+Loop::run();
+
 echo "Exiting.\n";

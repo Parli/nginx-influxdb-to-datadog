@@ -6,33 +6,35 @@ namespace Slant\Monitoring;
 use DataDog\DogStatsd;
 
 /**
- * @coversDefaultClass Slant\Monitoring\Rewriter
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Slant\Monitoring\Rewriter
  */
 class RewriterTest extends \PHPUnit\Framework\TestCase
 {
+    /** @var string[] */
     private $expectedIncrements = [];
+    /** @var array{string, float}[] */
     private $expectedTimers = [];
 
+    /** @var array{string, float, float, string[]}[] */
     private $timers = [];
+    /** @var array{string, float, string[], int}[] */
     private $increments = [];
 
     /**
-     * @covers ::rewrite
      * @dataProvider influxDbMessages
+     * @param string[] $tags
      */
-    public function testRewrite(string $message, string $prefix, float $time, array $tags)
+    public function testRewrite(string $message, string $prefix, float $time, array $tags): void
     {
         $dd = $this->createMock(DogStatsd::class);
         $dd->method('microtiming')
-            ->willReturnCallback(function (...$args) {
-                $this->timers[] = $args;
+            ->willReturnCallback(function ($stat, $time, $sampleRate = 1, $tags = null) {
+                $this->timers[] = [$stat, $time, $sampleRate, $tags];
             });
         $rewriter = new Rewriter($dd);
         $dd->method('increment')
-            ->willReturnCallback(function (...$args) {
-                $this->increments[] = $args;
+            ->willReturnCallback(function ($stats, $sampleRate = 1.0, $tags = null, $value = 1) {
+                $this->increments[] = [$stats, $sampleRate, $tags, $value];
             });
         $rewriter = new Rewriter($dd);
         $rewriter->rewrite($message);
@@ -42,6 +44,9 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
         $this->performAssertions($prefix, $tags);
     }
 
+    /**
+     * @return array{string, string, float, string[]}[]
+     */
     public function influxDbMessages(): array
     {
         return [
@@ -61,17 +66,20 @@ class RewriterTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    private function expectIncrement(string $metric)
+    private function expectIncrement(string $metric): void
     {
         $this->expectedIncrements[] = $metric;
     }
 
-    private function expectTimer(string $metric, float $seconds)
+    private function expectTimer(string $metric, float $seconds): void
     {
         $this->expectedTimers[] = [$metric, $seconds];
     }
 
-    private function performAssertions(string $prefix, array $tags)
+    /**
+     * @param string[] $tags
+     */
+    private function performAssertions(string $prefix, array $tags): void
     {
         $this->assertCount(count($this->expectedIncrements), $this->increments, 'Incorrect increment count');
         $this->assertCount(count($this->expectedTimers), $this->timers, 'Incorrect timer count');

@@ -1,7 +1,6 @@
 FROM composer:latest as dependencies
 WORKDIR /deps
-COPY composer.json .
-COPY composer.lock .
+COPY composer.json composer.lock ./
 RUN composer install \
     --ignore-platform-reqs \
     --no-dev \
@@ -11,11 +10,12 @@ RUN composer install \
     --prefer-dist \
     ;
 
-FROM php:7.2.9-cli-alpine as env
+FROM php:8.0.10-cli-alpine3.13 as env
 RUN docker-php-ext-install \
+    pcntl \
     sockets
 ENV RESOLVE_STATSD_HOST=true
 WORKDIR /app
-COPY . .
 COPY --from=dependencies /deps/vendor ./vendor
+COPY . .
 CMD php server.php
