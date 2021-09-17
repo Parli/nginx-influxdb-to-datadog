@@ -2,5 +2,7 @@ includes:
     - vendor/phpstan/phpstan-phpunit/extension.neon
 parameters:
     excludes_analyse:
-        - %rootDir%/../../../vendor
+        - vendor
     level: max
+    paths:
+        - .

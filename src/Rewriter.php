@@ -18,7 +18,7 @@ class Rewriter
         $this->datadog = $datadog;
     }
 
-    public function rewrite(string $influxDbMessage)
+    public function rewrite(string $influxDbMessage): void
     {
         list($head, $tagStr) = explode(' ', $influxDbMessage, 2);
         list($measurement, $serverNameTagStr) = explode(',', $head, 2);
@@ -41,6 +41,9 @@ class Rewriter
         );
     }
 
+    /**
+     * @return string[]
+     */
     private function parseTags(string $tagStr): array
     {
         $tagStr = trim($tagStr);
