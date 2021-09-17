@@ -12,6 +12,7 @@ RUN composer install \
 
 FROM php:8.0.10-cli-alpine3.13 as env
 RUN docker-php-ext-install \
+    pcntl \
     sockets
 ENV RESOLVE_STATSD_HOST=true
 WORKDIR /app
